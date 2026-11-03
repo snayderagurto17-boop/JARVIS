@@ -1,3 +1,4 @@
+
 name: Build JARVIS APK
 
 on:
@@ -24,8 +25,10 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Preparar Android
-        uses: android-actions/setup-android@v3
+      - name: Instalar componentes Android
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Extraer proyecto
         run: |
