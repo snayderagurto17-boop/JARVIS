@@ -4,7 +4,8 @@ name: Build JARVIS APK
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   build:
@@ -14,27 +15,31 @@ jobs:
       - name: Descargar proyecto
         uses: actions/checkout@v4
 
-      - name: Preparar Java
+      - name: Configurar Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Preparar Gradle
+      - name: Configurar Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
 
-      - name: Instalar componentes Android
-        run: |
-          yes | sdkmanager --licenses
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+      - name: Preparar Android
+        uses: android-actions/setup-android@v3
+        with:
+          packages: |
+            platform-tools
+            platforms;android-35
+            build-tools;35.0.0
+          log-accepted-android-sdk-licenses: true
 
       - name: Extraer proyecto
         run: |
           unzip -q JARVIS_Android_Starter.zip -d proyecto
 
-      - name: Compilar APK
+      - name: Compilar JARVIS
         working-directory: proyecto
         run: gradle assembleDebug
 
@@ -43,3 +48,4 @@ jobs:
         with:
           name: JARVIS-APK
           path: proyecto/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
